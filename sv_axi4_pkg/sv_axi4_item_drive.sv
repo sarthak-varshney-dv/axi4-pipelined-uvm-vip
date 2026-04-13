@@ -22,15 +22,37 @@ rand sv_axi4_data       wdata[];     // dynamic array — one entry per beat
   rand int unsigned               pre_data_delay;  // cycles before asserting Wvalid (write)
   rand int unsigned               pre_resp_delay;  // slave: cycles before asserting Bvalid/Rvalid
 
+// wdata arrays must match burst_len+1 beats
 constraint c_data_array_size {
     wdata.size() == burst_len + 1;
     
 }
   
+ // burst_size must not exceed log2(DATA_WIDTH/8)  
 constraint c_burst_size {
     burst_size <= $clog2(DATA_WIDTH / 8);
 }
 
+
+// WRAP burst: len must be 2,4,8,16 beats only
+  constraint c_wrap_len {
+    (burst_type == WRAP) -> (burst_len inside {1, 3, 7, 15});
+  }
+
+   // FIXED burst: max 16 beats per AXI4 spec
+  constraint c_fixed_len {
+    (burst_type == FIXED) -> (burst_len <= 15);
+  }
+
+  // WRAP burst: address must be naturally aligned to total transfer size
+  constraint c_wrap_align {
+    if (burst_type == WRAP) {
+      addr % ((burst_len + 1) * (1 << burst_size)) == 0;
+    }
+  }
+
+
+  // 4KB boundary: INCR burst must not cross 4KB boundary
 constraint c_4k_boundary {
     if (burst_type == INCR) {
         (addr & 32'hFFFFF000) == 
@@ -38,10 +60,25 @@ constraint c_4k_boundary {
     }
 }
 
+// Reasonable randomized delays
+  constraint c_delays {
+    addr_delay inside {[0:8]};
+    data_delay inside {[0:8]};
+    resp_delay inside {[0:4]};
+  }
+
   `uvm_object_utils(sv_axi4_item_drv)
   
   function new(string name="");
     super.new(name);
+  endfunction
+  
+  function void post_randomize();
+    if (dir == AXI4_READ) begin
+      rresp = new[burst_len + 1];
+      rdata = new[burst_len + 1];
+      foreach (rresp[i]) rresp[i] = OKAY;
+    end
   endfunction
   
   virtual function string convert2string();
