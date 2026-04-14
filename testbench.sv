@@ -82,7 +82,7 @@ module testbench();
     .rresp(axi4_if.rresp),
     .rlast(axi4_if.rlast),
     .rvalid(axi4_if.rvalid),
-    .rready(axi4_if.rready)
+    .rready(axi4_if.rready),
 
   );
   

@@ -110,11 +110,11 @@ protected virtual task drive_aw();
   
   forever begin
     
-    @(posedge vif.clk)
+    @(posedge vif.aclk)
     
 
     while(aw_q.size() == 0) begin
-        @(posedge vif.clk);
+        @(posedge vif.aclk);
     end
    
    item = aw_q.pop_front();
@@ -127,10 +127,10 @@ protected virtual task drive_aw();
 
     
     while(vif.awready !== 0) begin
-        @(posedge vif.clk);
+        @(posedge vif.aclk);
     end
    
-    @(posedge vif.clk);
+    @(posedge vif.aclk);
 
     
     vif.awvalid <= 0;
@@ -143,7 +143,50 @@ protected virtual task drive_aw();
 endtask
 
 protected virtual task drive_w();
-   
+
+sv_axi4_item_drv item ;
+
+   //just required in the begening. can be shifted to reset.
+    vif.wvalid <= 0;
+    vif.waddr <= 0;
+    vif.wdata <= 0;
+    vif.wlast <= 0;
+
+  
+  forever begin
+    
+    @(posedge vif.aclk)
+    
+
+        while(aw_q.size() == 0) begin
+            @(posedge vif.aclk);
+        end
+      
+      item = w_q.pop_front();
+
+      `uvm_info("UVM_DEBUG",$sformatf("Driving write data ID: %0d",item.id,UVM_NONE));
+
+    foreach(item.data[i]) begin 
+
+        vif.wvalid <= 1;
+        vif.waddr <= item.data[i];
+        vif.last<= (i == txn.data.size()-1);
+
+        while(vif.awready !== 0) begin
+            @(posedge vif.clk);
+        end
+
+         @(posedge vif.clk);
+
+    end
+
+    
+    vif.wvalid <= 0;
+    vif.waddr <= 0;
+    vif.wdata <= 0;
+    vif.wlast <= 0;
+
+  end
    
 
 
