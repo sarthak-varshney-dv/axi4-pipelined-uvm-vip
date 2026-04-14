@@ -99,6 +99,50 @@ protected virtual task get_and_dispatch();
 
 endtask
 
+protected virtual task drive_aw();
+  
+  sv_axi4_item_drv item ;
+  
+  forever begin
+    
+    vif.aw_valid <= 0;
+    vif.aw_addr <= 0;
+    vif.aw_id <= 0;
+
+    @(posedge vif.clk)
+    
+
+    while(aw_q.size() == 0) begin
+        @(posedge vif.clk);
+    end
+   
+   item = aw_q.pop_front();
+
+   `uvm_info("UVM_DEBUG",$sformatf("Driving write address ID: %0d",item.id,UVM_NONE));
+
+    vif.aw_valid <= 1;
+    vif.aw_addr <= item.addr;
+    vif.aw_id <= item.id;
+
+    
+    while(vif.aw_ready !== 0) begin
+        @(posedge vif.clk);
+    end
+   
+    @(posedge vif.clk);
+
+    
+    vif.aw_valid <= 0;
+    vif.aw_addr <= 0;
+    vif.aw_id <= 0;
+    
+    
+  end
+
+
+
+endtask
+
 virtual task wait_reset_end();
 
   agent_config.wait_reset_end();
