@@ -1,7 +1,7 @@
 `ifndef SV_AXI4_TYPES_SV
  `define SV_AXI4_TYPES_SV
 
-typedef virtual sv_apb_interface sv_apb_vif;
+typedef virtual sv_axi4_interface sv_axi4_vif;
 
 typedef bit[`SV_AXI4_MAX_DATA_WIDTH-1:0] sv_axi4_data;
 
