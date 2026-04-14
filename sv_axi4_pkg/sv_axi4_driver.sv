@@ -102,13 +102,14 @@ endtask
 protected virtual task drive_aw();
   
   sv_axi4_item_drv item ;
+
+   //just required in the begening. can be shifted to reset.
+    vif.awvalid <= 0;
+    vif.awaddr <= 0;
+    vif.awid <= 0;
   
   forever begin
     
-    vif.aw_valid <= 0;
-    vif.aw_addr <= 0;
-    vif.aw_id <= 0;
-
     @(posedge vif.clk)
     
 
@@ -120,28 +121,35 @@ protected virtual task drive_aw();
 
    `uvm_info("UVM_DEBUG",$sformatf("Driving write address ID: %0d",item.id,UVM_NONE));
 
-    vif.aw_valid <= 1;
-    vif.aw_addr <= item.addr;
-    vif.aw_id <= item.id;
+    vif.awvalid <= 1;
+    vif.awaddr <= item.addr;
+    vif.awid <= item.id;
 
     
-    while(vif.aw_ready !== 0) begin
+    while(vif.awready !== 0) begin
         @(posedge vif.clk);
     end
    
     @(posedge vif.clk);
 
     
-    vif.aw_valid <= 0;
-    vif.aw_addr <= 0;
-    vif.aw_id <= 0;
+    vif.awvalid <= 0;
+    vif.awaddr <= 0;
+    vif.awid <= 0;
     
     
   end
 
+endtask
+
+protected virtual task drive_w();
+   
+   
 
 
 endtask
+
+
 
 virtual task wait_reset_end();
 
