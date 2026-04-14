@@ -1,12 +1,12 @@
-`ifndef SV_AXI4_ENV_SV
- `define SV_AXI4_ENV_SV
+`ifndef SV_AXI4_TEST_BASE_SV
+ `define SV_AXI4_TEST_BASE_SV
 
-class sv_axi4_env extends uvm_env;
+class sv_axi4_item_base extends uvm_test;
   
-  sv_axi4_agent axi4_agent;
+  sv_axi4_env env;
 
   
-  `uvm_component_utils(sv_axi4_env)
+  `uvm_component_utils(sv_axi4_item_base)
   
   function new(string name="" , uvm_component parent);
       super.new(name,parent);
@@ -16,7 +16,7 @@ class sv_axi4_env extends uvm_env;
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    axi4_agent=   sv_apb_agent::type_id::create("axi4_agent",this);
+    env=   sv_apb_agent::type_id::create("env",this);
 
 
   endfunction
