@@ -62,9 +62,9 @@ constraint c_4k_boundary {
 
 // Reasonable randomized delays
   constraint c_delays {
-    addr_delay inside {[0:8]};
-    data_delay inside {[0:8]};
-    resp_delay inside {[0:4]};
+    soft pre_addr_delay inside {[0:5]};
+    soft pre_data_delay inside {[0:5]};
+    soft pre_resp_delay inside {[0:5]};
   }
 
   `uvm_object_utils(sv_axi4_item_drv)
@@ -77,15 +77,15 @@ constraint c_4k_boundary {
     if (dir == AXI4_READ) begin
       rresp = new[burst_len + 1];
       rdata = new[burst_len + 1];
-      foreach (rresp[i]) rresp[i] = OKAY;
+      foreach (rresp[i]) rresp[i] = SV_AXI4_OK;
     end
   endfunction
-  
-  virtual function string convert2string();
-    string result = $sformatf("dir: %0s , ADDR: %0x",dir.name(), addr);
+
+ // virtual function string convert2string();
+ //   string result = $sformatf("dir: %0s , ADDR: %0x",dir.name(), addr);
     
-    return result;
-  endfunction
+  //  return result;
+ // endfunction
 endclass
 
 
