@@ -62,4 +62,42 @@ interface sv_apb_interface(input logic aclk);
     has_checks = 1;
   end
 
+
+  // AWVALID must not go low until AWREADY is seen
+  property p_awvalid_stable;
+    @(posedge aclk) disable iff (!aresetn || !has_checks)
+    (awvalid && !awready) |=> awvalid;
+  endproperty
+  assert property (p_awvalid_stable)
+    else $error("[AXI4_IF] AWVALID de-asserted before AWREADY");
+
+  property p_wvalid_stable;
+    @(posedge aclk) disable iff (!aresetn || !has_checks)
+    (wvalid && !wready) |=> wvalid;
+  endproperty
+  assert property (p_wvalid_stable)
+    else $error("[AXI4_IF] WVALID de-asserted before WREADY");
+
+  property p_arvalid_stable;
+    @(posedge aclk) disable iff (!aresetn || !has_checks)
+    (arvalid && !arready) |=> arvalid;
+  endproperty
+  assert property (p_arvalid_stable)
+    else $error("[AXI4_IF] ARVALID de-asserted before ARREADY");
+
+  property p_bvalid_stable;
+    @(posedge aclk) disable iff (!aresetn || !has_checks)
+    (bvalid && !bready) |=> bvalid;
+  endproperty
+  assert property (p_bvalid_stable)
+    else $error("[AXI4_IF] BVALID de-asserted before BREADY");
+
+  // X/Z checks on VALID signals after reset
+  assert property (@(posedge aclk) disable iff (!aresetn || !has_checks) !$isunknown(awvalid))
+    else $error("[AXI4_IF] AWVALID is X/Z");
+  assert property (@(posedge aclk) disable iff (!aresetn || !has_checks) !$isunknown(wvalid))
+    else $error("[AXI4_IF] WVALID is X/Z");
+  assert property (@(posedge aclk) disable iff (!aresetn || !has_checks) !$isunknown(arvalid))
+    else $error("[AXI4_IF] ARVALID is X/Z");
+
 endinterface
