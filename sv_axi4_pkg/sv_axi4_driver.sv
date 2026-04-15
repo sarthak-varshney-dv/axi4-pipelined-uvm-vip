@@ -59,7 +59,7 @@ fork
                 //write side
                 drive_aw();
                 drive_w();
-                drive_b();
+                handle_b();
 
                 //read side
                 drive_ar();
@@ -170,7 +170,7 @@ sv_axi4_item_drv item ;
 
         vif.wvalid <= 1;
         vif.waddr <= item.data[i];
-        vif.last<= (i == txn.data.size()-1);
+        vif.last<= (i == item.data.size()-1);
 
         while(vif.awready !== 0) begin
             @(posedge vif.clk);
@@ -188,6 +188,35 @@ sv_axi4_item_drv item ;
 
   end
    
+endtask
+
+protected virtual task handle_b();
+  
+  sv_axi4_item_drv item ;
+
+   //just required in the begening. can be shifted to reset.
+    vif.bready <= 0;
+    
+    forever begin
+      @(posedge vif.aclk);
+
+      while(vif.bvalid !==1)begin
+      @(posedge vif.aclk);
+      end
+
+      item = write_outstanding(vif.bid) ;
+
+      item.bresp = sv_axi4_response'(vif.bresp);
+
+      vif.bready<=1 ;
+
+      seq_item_port.put_response(item); //to complete sequencer driver handshake
+
+      write_outstanding.delete(vif.bid);
+
+      write_sem.put(1);
+
+    end
 
 
 endtask
