@@ -322,11 +322,6 @@ virtual function void handle_reset(uvm_phase phase);
     process_drive_transaction = null;
   end
 
-  vif.psel <= 0;
-  vif.penable <= 0;
-  vif.write <= 0;
-  vif.paddr <= 0;
-  vif.pwdata <= 0;
 
 endfunction
 
