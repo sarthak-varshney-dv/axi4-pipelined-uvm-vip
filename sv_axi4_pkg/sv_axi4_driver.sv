@@ -4,6 +4,8 @@
 class sv_axi4_driver extends uvm_driver#(.REQ(sv_axi4_item_drv)) implements sv_axi4_reset_handler;
 
    sv_axi4_agent_config agent_config;
+
+   sv_axi4_vif vif =  agent_config.get_vif();
    
    sv_axi4_item_drv aw_q[$];
 
@@ -218,10 +220,53 @@ protected virtual task handle_b();
 
     end
 
-
 endtask
 
+protected virtual task drive_ar();
 
+ sv_apb_item_drv item ;
+ 
+   //just required in the begening. can be shifted to reset.
+    vif.arid <= 0 ;
+    vif.araddr <= 0 ;
+    vif.arlen <= 0 ;
+    vif.arsize <= 0 ;
+    vif.arburst <= 0 ;
+    vif.arvalid <= 0 ;
+
+  forever begin
+    @(posedge vif.aclk);
+
+    while(ar_q.size()==0) begin
+     @(posedge vif.aclk);
+    end
+
+    item = ar_q.pop_front();
+
+    vif.arvalid <= 1 ;
+    
+    vif.arid <= item.id ;
+    vif.araddr <= item.addr ;
+    vif.arlen <= item.burst_len ;
+    vif.arsize <= item.burst_size ;
+    vif.arburst <= bit'(item.burst_type) ;
+
+    while(vif.arready !== 1) begin
+     @(posedge vif.aclk);
+    end
+    
+     @(posedge vif.aclk);
+
+    vif.arid <= 0 ;
+    vif.araddr <= 0 ;
+    vif.arlen <= 0 ;
+    vif.arsize <= 0 ;
+    vif.arburst <= 0 ;
+    vif.arvalid <= 0 ;
+    
+  end
+
+endtask
 
 
 virtual task wait_reset_end();
