@@ -14,13 +14,13 @@ rand sv_axi4_data       wdata[];     // dynamic array — one entry per beat
 
   // Response fields (B / R)
   sv_axi4_response                           bresp;       // write response
-  sv_axi4_response                           rresp[];     // read response per beat
-  bit  [`SV_AXI4_MAX_DATA_WIDTH:0]           rdata[];     // read data per beat
+  sv_axi4_response                           rresp[$];     // read response per beat
+  bit  [`SV_AXI4_MAX_DATA_WIDTH:0]           rdata[$];     // read data per beat
 
-  //delays
-  rand int unsigned               pre_addr_delay;  // cycles before asserting AW/ARvalid
-  rand int unsigned               pre_data_delay;  // cycles before asserting Wvalid (write)
-  rand int unsigned               pre_resp_delay;  // slave: cycles before asserting Bvalid/Rvalid
+  //delays (not implemented yet)
+ // rand int unsigned               pre_addr_delay;  // cycles before asserting AW/ARvalid
+ // rand int unsigned               pre_data_delay;  // cycles before asserting Wvalid (write)
+ // rand int unsigned               pre_resp_delay;  // slave: cycles before asserting Bvalid/Rvalid
 
 // wdata arrays must match burst_len+1 beats
 constraint c_data_array_size {
@@ -73,13 +73,13 @@ constraint c_4k_boundary {
     super.new(name);
   endfunction
   
-  function void post_randomize();
-    if (dir == AXI4_READ) begin
-      rresp = new[burst_len + 1];
-      rdata = new[burst_len + 1];
-      foreach (rresp[i]) rresp[i] = SV_AXI4_OK;
-    end
-  endfunction
+ // function void post_randomize(); made rresp and rdata as queues
+  //  if (dir == AXI4_READ) begin
+ //     rresp = new[burst_len + 1];
+  //    rdata = new[burst_len + 1];
+  //    foreach (rresp[i]) rresp[i] = SV_AXI4_OK;
+  //  end
+//  endfunction
 
  // virtual function string convert2string();
  //   string result = $sformatf("dir: %0s , ADDR: %0x",dir.name(), addr);

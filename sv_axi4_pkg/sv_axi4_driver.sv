@@ -206,7 +206,7 @@ protected virtual task handle_b();
       @(posedge vif.aclk);
       end
 
-      item = write_outstanding(vif.bid) ;
+      item = write_outstanding[vif.bid] ;
 
       item.bresp = sv_axi4_response'(vif.bresp);
 
@@ -268,6 +268,44 @@ protected virtual task drive_ar();
 
 endtask
 
+protected virtual task  handle_r();
+
+sv_axi4_item_drv item ;
+
+   //just required in the begening. can be shifted to reset.
+vif.rready <=0 ;
+
+forever begin
+     @(posedge vif.aclk);
+
+     while(vif.rvalid !==1)begin
+      @(posedge vif.aclk);
+      end
+  
+  item = read_outstanding[vif.rid];
+
+  item.rdata.push_back(vif.rdata);
+   
+   vif.rready<=1 ;
+  
+  item.rresp.push_back(sv_axi4_response'(vif.rresp));
+
+  if(vif.rlast == 1) begin
+
+    seq_item_port.put_response(item);
+
+    read_outstanding.delete(vif.rid);
+
+    read_sem.put(1);
+    
+  end
+
+      @(posedge vif.aclk);
+       vif.rready <=0 ;
+
+end
+
+endtask
 
 virtual task wait_reset_end();
 
