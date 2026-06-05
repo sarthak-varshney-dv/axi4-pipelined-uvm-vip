@@ -21,7 +21,7 @@ class sv_axi4_agent_config extends uvm_component;
       active_passive = UVM_ACTIVE;
       has_checks=1;
       has_coverage=1;
-      stuck_threshold =100;
+
    endfunction
   
  virtual function void set_vif(sv_axi4_vif value);
@@ -68,16 +68,6 @@ class sv_axi4_agent_config extends uvm_component;
   return has_coverage;
   endfunction
 
-    virtual function void set_stuck_threshold(bit value);
-    if(value<=2)begin     // since minimum clock cycles in axi4 transfer is 2
-      `uvm_error("ALGORITHM_ISSUE","Tried to set stuck threshold less than  or equal to 2")
-    end
-  stuck_threshold=value;
-  endfunction
-
-  virtual function bit get_stuck_threshold()
-  return stuck_threshold;
-  endfunction
 
   virtual task wait_reset_start()  //Asynchronous reset 
   if(vif.preset_n !==0)begin
