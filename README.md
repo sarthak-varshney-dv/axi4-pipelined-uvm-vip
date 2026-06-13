@@ -146,7 +146,7 @@ Sequence
 
 Recruiters love this section.
 
-```markdown
+
 # Outstanding Transaction Management
 
 To support realistic AXI4 traffic patterns, the driver maintains an outstanding transaction table.
@@ -165,7 +165,7 @@ Transactions are stored using unique IDs and remain active until completion.
 
 Request Order:
 
-```text
+
 ID1
 ID2
 ID3
