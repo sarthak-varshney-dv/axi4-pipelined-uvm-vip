@@ -121,7 +121,7 @@ The AXI4 driver uses a multi-threaded architecture to model realistic protocol b
 
 ### Driver Flow
 
-```text
+
 Sequence
    |
    v
