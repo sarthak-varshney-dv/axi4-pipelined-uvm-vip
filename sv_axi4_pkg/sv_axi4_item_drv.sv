@@ -7,11 +7,11 @@ class sv_axi4_item_drv extends sv_axi4_item_base;
 rand sv_axi4_id         id;
 rand sv_axi4_dir        dir;
 rand sv_axi4_addr       addr;        // starting address
-rand logic [7:0]        burst_len;   // number of beats MINUS 1
-rand logic [2:0]        burst_size;  // bytes per beat (as power of 2)
+rand bit [7:0]          burst_len;   // number of beats MINUS 1
+rand bit [2:0]          burst_size;  // bytes per beat (as power of 2)
 rand sv_axi4_burst      burst_type;  // FIXED, INCR, or WRAP
 rand sv_axi4_data       wdata[];     // dynamic array — one entry per beat
-
+rand bit[3:0]           wstrb ;
   // Response fields (B / R)
   sv_axi4_response                           bresp;       // write response
   sv_axi4_response                           rresp[$];     // read response per beat
@@ -23,14 +23,25 @@ rand sv_axi4_data       wdata[];     // dynamic array — one entry per beat
  // rand int unsigned               pre_resp_delay;  // slave: cycles before asserting Bvalid/Rvalid
 
 // wdata arrays must match burst_len+1 beats
-constraint c_data_array_size {
+constraint c_data_queue_size {
     wdata.size() == burst_len + 1;
     
 }
   
  // burst_size must not exceed log2(DATA_WIDTH/8)  
 constraint c_burst_size {
-    burst_size <= $clog2(DATA_WIDTH / 8);
+   // burst_size <= $clog2(DATA_WIDTH / 8);
+
+    //temporary consraint
+    burst_size = $clog2(DATA_WIDTH / 8); //to avoid narrow transfers 
+
+
+}
+
+//temporary consraint
+constraint c_wstrb {
+    wstrb = 4'b1111 ; //as no narrow and unaligned transfers assumed 
+
 }
 
 
@@ -44,7 +55,7 @@ constraint c_burst_size {
     (burst_type == FIXED) -> (burst_len <= 15);
   }
 
-  // WRAP burst: address must be naturally aligned to total transfer size
+  // WRAP burst: address must be aligned 
   constraint c_wrap_align {
     if (burst_type == WRAP) {
       addr % ((burst_len + 1) * (1 << burst_size)) == 0;
@@ -60,12 +71,14 @@ constraint c_4k_boundary {
     }
 }
 
+
+
 // Reasonable randomized delays
-  constraint c_delays {
-    soft pre_addr_delay inside {[0:5]};
-    soft pre_data_delay inside {[0:5]};
-    soft pre_resp_delay inside {[0:5]};
-  }
+  //constraint c_delays {
+  //  soft pre_addr_delay inside {[0:5]};
+  // soft pre_data_delay inside {[0:5]};
+  //  soft pre_resp_delay inside {[0:5]};
+ // }
 
   `uvm_object_utils(sv_axi4_item_drv)
   

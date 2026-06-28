@@ -15,10 +15,10 @@ class sv_axi4_agent extends uvm_agent implements sv_axi4_reset_handler ;
   //driver handler
   sv_axi4_driver driver;
 
-  //monitor handler
+  //monitor handler (not implemented yet)
  // sv_axi4_monitor monitor;
-  
-  //coverage handler
+   
+  //coverage handler (not implemented yet)
  // sv_axi4_coverage coverage;
 
   `uvm_component_utils(sv_axi4_agent)
@@ -38,11 +38,11 @@ if(agent_config.get_active_passive == UVM_ACTIVE) begin
     driver       = sv_axi4_driver::type_id::create("driver",this);
 end
 
-    monitor      = sv_axi4_monitor::type_id::create("monitor",this);
+   //  monitor      = sv_axi4_monitor::type_id::create("monitor",this);
 
     if(agent_config.get_has_coverage()) begin
-      coverage = sv_axi4_coverage::type_id::create("coverage");
-      coverage.agent_config=agent_config;
+      // coverage = sv_axi4_coverage::type_id::create("coverage");
+     //  coverage.agent_config=agent_config;
     end
     
 
