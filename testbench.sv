@@ -8,26 +8,18 @@ module testbench();
   
   reg clk;
   
- // always #5 clk=~clk;   //for clock. cristan has declared clong in a long form
+  always #5 clk=~clk;  
   
-  initial begin
-    clk =0;
-    forever begin
-      clk= #5ns ~clk;
-    end
-  end
-  
-  
-  initial begin
+  //axi4 INTERFACE HANDLE
+    sv_axi4_interface axi4_if(.aclk(clk));
+
+     initial begin
     axi4_if.areset_n=1;
     #3;
     axi4_if.areset_n=0;
     #30;
     axi4_if.areset_n=1;
   end
-  
-  //axi4 INTERFACE HANDLE
-    sv_axi4_interface axi4_if(.aclk(clk));
 
   
   initial begin
