@@ -16,10 +16,10 @@ class sv_axi4_agent extends uvm_agent implements sv_axi4_reset_handler ;
   sv_axi4_driver driver;
 
   //monitor handler
-  sv_axi4_monitor monitor;
+ // sv_axi4_monitor monitor;
   
   //coverage handler
-  sv_axi4_coverage coverage;
+ // sv_axi4_coverage coverage;
 
   `uvm_component_utils(sv_axi4_agent)
   
@@ -64,11 +64,11 @@ end
         driver.agent_config=agent_config;
       end
       
-      monitor.agent_config=agent_config;
+    //  monitor.agent_config=agent_config;
 
-      if(agent_config.get_has_checks) begin
-      coverage.port_item.connect(monitor.output_port);
-    end
+   //   if(agent_config.get_has_checks) begin
+   //   coverage.port_item.connect(monitor.output_port);
+   // end
   endfunction
   
 virtual function void handle_reset(uvm_phase phase) 
