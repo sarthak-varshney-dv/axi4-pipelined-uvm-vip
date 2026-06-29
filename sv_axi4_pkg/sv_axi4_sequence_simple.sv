@@ -22,7 +22,7 @@ task body();
  get_response(rsp); //for driver sequencer handshake completion
 
       `uvm_info("UVM_DEBUG", 
-        $sformatf("Received rsp id=%0d data=%0h", rsp.id, rsp.data),
+                $sformatf("Received (sequencer handshake) rsp id=%0d ", rsp.id),
         UVM_LOW)
 
 endtask

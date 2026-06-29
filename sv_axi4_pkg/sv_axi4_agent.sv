@@ -61,8 +61,10 @@ end
       if(agent_config.get_active_passive()==UVM_ACTIVE) begin 
 
         sequencer.seq_item_export.connect(driver.seq_item_port);
-        driver.agent_config=agent_config;
-      end
+        driver.agent_config = agent_config;
+    
+  
+    end
       
     //  monitor.agent_config=agent_config;
 
@@ -71,34 +73,35 @@ end
    // end
   endfunction
   
-virtual function void handle_reset(uvm_phase phase) 
+  virtual function void handle_reset(uvm_phase phase) ;
 
  uvm_component children[$];
+ sv_axi4_reset_handler handler; 
+
 
  get_children(children);
-
-  sv_axi4_reset_handler handler;
+    
   foreach(children[idx]) begin
     if($cast(handler,children[idx])) begin
-      handler.handle_reset();
+      handler.handle_reset(phase);
     end
   end
 endfunction
 
-  virtual task wait_reset_start()  //Asynchronous reset 
+  virtual task wait_reset_start() ; //Asynchronous reset 
     agent_config.wait_reset_start();
   endtask
 
-  virtual task wait_reset_end() //synchronous
+  virtual task wait_reset_end() ;//synchronous
     agent_config.wait_reset_end();
   
   endtask
 
-virtual task run_phase(uvm_phase phase)
+  virtual task run_phase(uvm_phase phase);
 forever begin
 
   wait_reset_start();
-  handle_reset();
+  handle_reset(phase);
   wait_reset_end();
 
 end

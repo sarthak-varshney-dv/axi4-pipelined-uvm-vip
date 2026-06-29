@@ -31,11 +31,12 @@ module testbench();
   //when instantiate axi4_agent, use name axi4_agent 
     
     
-    run_test("  ");
+    run_test("");
   end
   
     axi4_slave dut(
-    .reset_n(axi4_if.areset_n),
+      .clk(clk),
+    .resetn(axi4_if.areset_n),
     
     // WRITE ADDRESS CHANNEL
     .awvalid(axi4_if.awvalid),
@@ -74,7 +75,7 @@ module testbench();
     .rresp(axi4_if.rresp),
     .rlast(axi4_if.rlast),
     .rvalid(axi4_if.rvalid),
-    .rready(axi4_if.rready),
+    .rready(axi4_if.rready)
 
   );
   

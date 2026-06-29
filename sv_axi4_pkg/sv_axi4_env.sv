@@ -1,7 +1,9 @@
 `ifndef SV_AXI4_ENV_SV
  `define SV_AXI4_ENV_SV
 
-class sv_axi4_env extends uvm_env;
+
+
+class sv_axi4_env extends uvm_env ;
   
   sv_axi4_agent axi4_agent;
 
@@ -16,7 +18,7 @@ class sv_axi4_env extends uvm_env;
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    axi4_agent=   sv_apb_agent::type_id::create("axi4_agent",this);
+    axi4_agent=   sv_axi4_agent::type_id::create("axi4_agent",this);
 
 
   endfunction

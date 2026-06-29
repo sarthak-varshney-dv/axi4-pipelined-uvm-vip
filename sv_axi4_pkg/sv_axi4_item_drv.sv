@@ -33,14 +33,14 @@ constraint c_burst_size {
    // burst_size <= $clog2(DATA_WIDTH / 8);
 
     //temporary consraint
-    burst_size = $clog2(DATA_WIDTH / 8); //to avoid narrow transfers 
+  burst_size == $clog2(`SV_AXI4_MAX_DATA_WIDTH / 8); //to avoid narrow transfers 
 
 
 }
 
 //temporary consraint
 constraint c_wstrb {
-    wstrb = 4'b1111 ; //as no narrow and unaligned transfers assumed 
+    wstrb == 4'b1111 ; //as no narrow and unaligned transfers assumed 
 
 }
 

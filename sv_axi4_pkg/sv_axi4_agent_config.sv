@@ -24,6 +24,7 @@ class sv_axi4_agent_config extends uvm_component;
 
    endfunction
   
+  
  virtual function void set_vif(sv_axi4_vif value);
     if(vif==null) begin
     vif=value;
@@ -39,7 +40,7 @@ class sv_axi4_agent_config extends uvm_component;
      return vif;
   endfunction
 
-  virtual function uvm_active_passive_enum get_active_passive()
+  virtual function uvm_active_passive_enum get_active_passive();
      return active_passive;
   endfunction
 
@@ -54,7 +55,7 @@ class sv_axi4_agent_config extends uvm_component;
   end
   endfunction
 
-  virtual function bit get_has_checks()
+  virtual function bit get_has_checks();
   return has_checks;
   endfunction
 
@@ -64,24 +65,24 @@ class sv_axi4_agent_config extends uvm_component;
   
   endfunction
 
-  virtual function bit get_has_coverage()
+  virtual function bit get_has_coverage();
   return has_coverage;
   endfunction
 
 
-  virtual task wait_reset_start()  //Asynchronous reset 
-  if(vif.preset_n !==0)begin
-   @(negedge vif.preset_n);
+  virtual task wait_reset_start();  //Asynchronous reset 
+  if(vif.areset_n !==0)begin
+   @(negedge vif.areset_n);
   end
   endtask
 
-  virtual task wait_reset_end() //synchronous
-  while(vif.preset_n == 0) begin
-   @(posedge vif.clk) ;
+  virtual task wait_reset_end(); //synchronous
+  while(vif.areset_n == 0) begin
+    @(posedge vif.aclk) ;
   end
   endtask
 
-  virtual function void run_phase(uvm_phase phase);
+  virtual task run_phase(uvm_phase phase);
     forever begin
     @(vif.has_checks) ;
 
@@ -91,9 +92,7 @@ class sv_axi4_agent_config extends uvm_component;
 
     end
   
-
-
-  endfunction
+  endtask
 endclass
 
 `endif

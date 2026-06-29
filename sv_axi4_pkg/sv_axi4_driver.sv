@@ -5,8 +5,8 @@ class sv_axi4_driver extends uvm_driver#(.REQ(sv_axi4_item_drv)) implements sv_a
 
    sv_axi4_agent_config agent_config;
 
-   sv_axi4_vif vif =  agent_config.get_vif();
-   
+   sv_axi4_vif vif   ;
+  
    sv_axi4_item_drv aw_q[$];
 
    sv_axi4_item_drv w_q[$];
@@ -36,6 +36,29 @@ class sv_axi4_driver extends uvm_driver#(.REQ(sv_axi4_item_drv)) implements sv_a
     read_sem = new(4);
 
     endfunction 
+  
+  virtual function void connect_phase(uvm_phase phase);
+    super.connect_phase(phase);
+
+    `uvm_info("DRV", "Entered driver connect_phase", UVM_NONE)
+
+    if (agent_config == null)
+        `uvm_fatal("DRV", "agent_config is NULL")
+
+    if (agent_config.get_vif() == null)
+        `uvm_fatal("DRV", "vif inside agent_config is NULL")
+
+    vif = agent_config.get_vif();
+
+endfunction
+  
+   virtual function void start_of_simulation_phase(uvm_phase phase);
+   super.start_of_simulation_phase(phase);
+   if (vif == null) begin
+     `uvm_fatal("ERROR","vif is not configured in start_of_simulation_phase ")
+   end
+  
+endfunction 
 
 virtual task run_phase(uvm_phase phase);
  forever begin 
@@ -121,7 +144,7 @@ protected virtual task drive_aw();
    
    item = aw_q.pop_front();
 
-   `uvm_info("UVM_DEBUG",$sformatf("Driving write address ID: %0d",item.id,UVM_NONE));
+    `uvm_info("UVM_DEBUG",$sformatf("Driving write address ID: %0d",item.id),UVM_NONE);
 
     vif.awvalid <= 1;
     vif.awaddr <= item.addr;
@@ -150,7 +173,7 @@ sv_axi4_item_drv item ;
 
    //just required in the begening. can be shifted to reset.
     vif.wvalid <= 0;
-    vif.waddr <= 0;
+    vif.awaddr <= 0;
     vif.wdata <= 0;
     vif.wlast <= 0;
 
@@ -166,25 +189,25 @@ sv_axi4_item_drv item ;
       
       item = w_q.pop_front();
 
-      `uvm_info("UVM_DEBUG",$sformatf("Driving write data ID: %0d",item.id,UVM_NONE));
+    `uvm_info("UVM_DEBUG",$sformatf("Driving write wdata ID: %0d",item.id),UVM_NONE);
 
-    foreach(item.data[i]) begin 
+    foreach(item.wdata[i]) begin 
 
         vif.wvalid <= 1;
-        vif.waddr <= item.data[i];
-        vif.last<= (i == item.data.size()-1);
+        vif.awaddr <= item.wdata[i];
+      vif.wlast<= (i == item.wdata.size()-1);
 
         while(vif.awready !== 0) begin
-            @(posedge vif.clk);
+          @(posedge vif.aclk);
         end
 
-         @(posedge vif.clk);
+      @(posedge vif.aclk);
 
     end
 
     
     vif.wvalid <= 0;
-    vif.waddr <= 0;
+    vif.awaddr <= 0;
     vif.wdata <= 0;
     vif.wlast <= 0;
 
@@ -224,7 +247,7 @@ endtask
 
 protected virtual task drive_ar();
 
- sv_apb_item_drv item ;
+ sv_axi4_item_drv item ;
  
    //just required in the begening. can be shifted to reset.
     vif.arid <= 0 ;
@@ -314,7 +337,7 @@ virtual task wait_reset_end();
 endtask
 
 virtual function void handle_reset(uvm_phase phase);
-  sv_axi4_vif = agent_config.get_vif();
+ // sv_axi4_vif vif = agent_config.get_vif(); 
 
   if(process_drive_transaction != null) begin
     process_drive_transaction.kill();
