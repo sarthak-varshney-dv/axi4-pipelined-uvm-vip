@@ -98,13 +98,6 @@ constraint c_4k_boundary {
     super.new(name);
   endfunction
   
- // function void post_randomize(); made rresp and rdata as queues
-  //  if (dir == AXI4_READ) begin
- //     rresp = new[burst_len + 1];
-  //    rdata = new[burst_len + 1];
-  //    foreach (rresp[i]) rresp[i] = SV_AXI4_OK;
-  //  end
-//  endfunction
 
  // virtual function string convert2string();
  //   string result = $sformatf("dir: %0s , ADDR: %0x",dir.name(), addr);
