@@ -18,14 +18,16 @@ class sv_axi4_test_one extends sv_axi4_test_base;
   
   virtual task run_phase(uvm_phase phase);
     
-    #(100ns)
     
     phase.raise_objection(this,"test_done");
+    
+      #(100ns)
       
     repeat(5) begin
       sv_axi4_sequence_simple seq = sv_axi4_sequence_simple::type_id::create("seq");
       
-      void'(seq.randomize);
+      void'(seq.randomize() with {
+      dir = SV_AXI4_WRITE });
       
       seq.start(env.axi4_agent.sequencer);
     end

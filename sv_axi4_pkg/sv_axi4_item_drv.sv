@@ -11,11 +11,11 @@ rand bit [7:0]          burst_len;   // number of beats MINUS 1
 rand bit [2:0]          burst_size;  // bytes per beat (as power of 2)
 rand sv_axi4_burst      burst_type;  // FIXED, INCR, or WRAP
 rand sv_axi4_data       wdata[];     // dynamic array — one entry per beat
-rand bit[3:0]           wstrb ;
+  rand bit[7:0]           wstrb[] ;
   // Response fields (B / R)
   sv_axi4_response                           bresp;       // write response
   sv_axi4_response                           rresp[$];     // read response per beat
-  bit  [`SV_AXI4_MAX_DATA_WIDTH:0]           rdata[$];     // read data per beat
+  bit  [`SV_AXI4_MAX_DATA_WIDTH-1:0]           rdata[$];     // read data per beat
 
   //delays (not implemented yet)
  // rand int unsigned               pre_addr_delay;  // cycles before asserting AW/ARvalid
@@ -40,9 +40,15 @@ constraint c_burst_size {
 
 //temporary consraint
 constraint c_wstrb {
-    wstrb == 4'b1111 ; //as no narrow and unaligned transfers assumed 
+ foreach (wstrb[i])
+    wstrb[i] == '1;
 
 }
+  
+  constraint c_wstrb_size {
+    wstrb.size() == wdata.size() ;
+  }
+
 
 
 // WRAP burst: len must be 2,4,8,16 beats only
@@ -71,6 +77,12 @@ constraint c_4k_boundary {
     }
 }
 
+      constraint c_len {
+    burst_len inside {[0:15]};
+}
+      constraint c_addr_align {   //for generating aligned addresses
+    addr % (1 << burst_size) == 0;
+}
 
 
 // Reasonable randomized delays

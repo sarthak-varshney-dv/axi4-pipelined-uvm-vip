@@ -2,7 +2,7 @@
  `define SV_AXI4_INTERFACE_SV
 
  `ifndef SV_AXI4_MAX_DATA_WIDTH
- `define SV_AXI4_MAX_DATA_WIDTH 32
+ `define SV_AXI4_MAX_DATA_WIDTH 64
    `endif
 
  `ifndef SV_AXI4_MAX_ADDR_WIDTH

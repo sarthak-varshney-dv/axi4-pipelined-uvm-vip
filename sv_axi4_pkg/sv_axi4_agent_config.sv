@@ -77,9 +77,25 @@ class sv_axi4_agent_config extends uvm_component;
   endtask
 
   virtual task wait_reset_end(); //synchronous
+ //   while(vif.areset_n == 0) begin
+ //   @(posedge vif.aclk) ;
+ //  end
+    
+      `uvm_info("RST",
+    $sformatf("Entered wait_reset_end areset_n=%0b", vif.areset_n),
+    UVM_NONE)
+
   while(vif.areset_n == 0) begin
-    @(posedge vif.aclk) ;
+    @(posedge vif.aclk);
+
+    `uvm_info("RST",
+      $sformatf("Clock edge areset_n=%0b time=%0t", vif.areset_n, $time),
+      UVM_NONE)
   end
+
+  `uvm_info("RST",
+    $sformatf("Leaving wait_reset_end at %0t", $time),
+    UVM_NONE)
   endtask
 
   virtual task run_phase(uvm_phase phase);

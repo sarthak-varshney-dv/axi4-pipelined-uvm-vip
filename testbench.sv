@@ -6,7 +6,7 @@ module testbench();
   import sv_axi4_pkg::*;
   
   
-  reg clk;
+  reg clk=0 ;
   
   always #5 clk=~clk;  
   
@@ -17,10 +17,12 @@ module testbench();
     axi4_if.areset_n=1;
     #3;
     axi4_if.areset_n=0;
-    #30;
+    #31;
     axi4_if.areset_n=1;
   end
-
+  
+  always @(posedge clk) begin
+    $display("[%0t] TB clk", $time); end
   
   initial begin
     $dumpfile("dump.vcd");
@@ -34,9 +36,9 @@ module testbench();
     run_test("");
   end
   
-    axi4_slave dut(
-      .clk(clk),
-    .resetn(axi4_if.areset_n),
+    axi4_slave_dut dut(
+      .aclk(clk),
+    .aresetn(axi4_if.areset_n),
     
     // WRITE ADDRESS CHANNEL
     .awvalid(axi4_if.awvalid),

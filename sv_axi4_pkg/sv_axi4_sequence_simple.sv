@@ -17,13 +17,28 @@ endfunction
 
 task body();
 
-`uvm_send(item)
+//`uvm_send(item)
 
- get_response(rsp); //for driver sequencer handshake completion
+// get_response(rsp); //for driver sequencer handshake completion
 
-      `uvm_info("UVM_DEBUG", 
-                $sformatf("Received (sequencer handshake) rsp id=%0d ", rsp.id),
-        UVM_LOW)
+   //   `uvm_info("UVM_DEBUG", 
+   //             $sformatf("Received (sequencer handshake) rsp id=%0d ", rsp.id),
+   //     UVM_LOW)
+
+  
+  `uvm_info("SEQ","Entered body",UVM_NONE)
+
+  `uvm_info("SEQ","Before uvm_send",UVM_NONE)
+
+  `uvm_send(item)
+
+  `uvm_info("SEQ","After uvm_send",UVM_NONE)
+
+  `uvm_info("SEQ","Before get_response",UVM_NONE)
+
+  get_response(rsp);
+
+  `uvm_info("SEQ","After get_response",UVM_NONE)
 
 endtask
 
